@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: business_db
+    environment:
+      POSTGRES_DB: business_management
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: business_backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: business_management
+      DB_USER: postgres
+      DB_PASSWORD: secure_password
+      JWT_SECRET: your_super_secret_jwt_key_here
+      SUPER_ADMIN_ACCESS_CODE: super_admin_secure_code_here
+      COMPANY_ADMIN_ACCESS_CODE: company_admin_secure_code_here
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: business_frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
