@@ -1,0 +1,82 @@
+name: Build Debug APK for Testing
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install Backend Dependencies
+      run: |
+        cd backend
+        npm ci
+    
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm run build
+    
+    - name: Archive Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-output
+        path: |
+          frontend/dist
+          backend/src
+          database/migrations
+          docker-compose.yml
+          README.md
+        retention-days: 30
+    
+    - name: Create Release Package
+      run: |
+        mkdir -p release-package
+        cp -r frontend/dist release-package/
+        cp -r backend/src release-package/backend/
+        cp -r database/migrations release-package/database/
+        cp docker-compose.yml release-package/
+        cp README.md release-package/
+        cd release-package
+        zip -r ../business-management-app.zip .
+    
+    - name: Upload Release Asset
+      uses: actions/upload-artifact@v4
+      with:
+        name: business-management-app
+        path: business-management-app.zip
+        retention-days: 30
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Security Scan
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript, typescript
+    
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
