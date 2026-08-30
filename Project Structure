@@ -1,0 +1,94 @@
+business-management-app/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── database.js
+│   │   │   ├── env.js
+│   │   │   └── passport.js
+│   │   ├── models/
+│   │   │   ├── User.js
+│   │   │   ├── Company.js
+│   │   │   ├── Salesman.js
+│   │   │   ├── Party.js
+│   │   │   ├── Item.js
+│   │   │   ├── Inventory.js
+│   │   │   ├── Invoice.js
+│   │   │   ├── Transaction.js
+│   │   │   ├── Expense.js
+│   │   │   ├── Route.js
+│   │   │   ├── Session.js
+│   │   │   └── Subscription.js
+│   │   ├── controllers/
+│   │   │   ├── authController.js
+│   │   │   ├── salesmanController.js
+│   │   │   ├── adminController.js
+│   │   │   ├── superAdminController.js
+│   │   │   ├── inventoryController.js
+│   │   │   ├── invoiceController.js
+│   │   │   ├── partyController.js
+│   │   │   ├── expenseController.js
+│   │   │   └── paymentController.js
+│   │   ├── middleware/
+│   │   │   ├── auth.js
+│   │   │   ├── roleCheck.js
+│   │   │   └── subscription.js
+│   │   ├── routes/
+│   │   │   ├── authRoutes.js
+│   │   │   ├── salesmanRoutes.js
+│   │   │   ├── adminRoutes.js
+│   │   │   ├── superAdminRoutes.js
+│   │   │   └── paymentRoutes.js
+│   │   ├── utils/
+│   │   │   ├── invoiceGenerator.js
+│   │   │   ├── paymentProcessor.js
+│   │   │   └── security.js
+│   │   └── app.js
+│   ├── .env.example
+│   ├── package.json
+│   └── server.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── common/
+│   │   │   │   ├── Layout.jsx
+│   │   │   │   ├── Sidebar.jsx
+│   │   │   │   └── Header.jsx
+│   │   │   ├── salesman/
+│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── PartyManagement.jsx
+│   │   │   │   ├── ItemManagement.jsx
+│   │   │   │   ├── InvoiceGenerator.jsx
+│   │   │   │   ├── InventoryTransfer.jsx
+│   │   │   │   └── ExpenseTracker.jsx
+│   │   │   ├── admin/
+│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── SalesmanManagement.jsx
+│   │   │   │   ├── RouteScheduling.jsx
+│   │   │   │   └── LiveTracking.jsx
+│   │   │   └── superadmin/
+│   │   │       ├── Dashboard.jsx
+│   │   │       ├── PackageConfiguration.jsx
+│   │   │       └── DeviceManagement.jsx
+│   │   ├── contexts/
+│   │   │   ├── AuthContext.jsx
+│   │   │   └── SubscriptionContext.jsx
+│   │   ├── hooks/
+│   │   │   ├── useAuth.js
+│   │   │   └── useSubscription.js
+│   │   ├── services/
+│   │   │   ├── api.js
+│   │   │   └── websocket.js
+│   │   ├── styles/
+│   │   │   └── global.css
+│   │   ├── App.jsx
+│   │   └── index.js
+│   ├── package.json
+│   └── vite.config.js
+├── database/
+│   ├── migrations/
+│   │   ├── 001_initial_schema.sql
+│   │   └── 002_subscription_tables.sql
+│   └── seeders/
+│       └── initial_data.sql
+├── docker-compose.yml
+└── README.md
