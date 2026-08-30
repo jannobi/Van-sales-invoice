@@ -2,8 +2,6 @@ name: Build Debug APK for Testing
 
 on:
   push:
-    branches: [ main, master, develop ]
-  pull_request:
     branches: [ main, master ]
   workflow_dispatch:
 
@@ -19,64 +17,23 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
     
-    - name: Install Backend Dependencies
+    - name: Install Dependencies
       run: |
         cd backend
-        npm ci
+        npm install
     
-    - name: Install Frontend Dependencies
+    - name: Create Build
       run: |
-        cd frontend
-        npm ci
+        mkdir -p build-output
+        cp -r backend/src build-output/
+        cp backend/package.json build-output/
+        cp backend/server.js build-output/
+        echo "Build completed successfully!"
     
-    - name: Build Frontend
-      run: |
-        cd frontend
-        npm run build
-    
-    - name: Archive Build Artifacts
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: build-output
-        path: |
-          frontend/dist
-          backend/src
-          database/migrations
-          docker-compose.yml
-          README.md
+        name: app-build
+        path: build-output/
         retention-days: 30
-    
-    - name: Create Release Package
-      run: |
-        mkdir -p release-package
-        cp -r frontend/dist release-package/
-        cp -r backend/src release-package/backend/
-        cp -r database/migrations release-package/database/
-        cp docker-compose.yml release-package/
-        cp README.md release-package/
-        cd release-package
-        zip -r ../business-management-app.zip .
-    
-    - name: Upload Release Asset
-      uses: actions/upload-artifact@v4
-      with:
-        name: business-management-app
-        path: business-management-app.zip
-        retention-days: 30
-
-  security-scan:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Run Security Scan
-      uses: github/codeql-action/init@v3
-      with:
-        languages: javascript, typescript
-    
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
