@@ -1,0 +1,36 @@
+name: Build Mobile APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install Dependencies
+        run: |
+          cd mobile
+          npm install
+      
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      
+      - name: Build APK
+        run: |
+          cd mobile
+          npx expo export:embed
+          npx expo run:android --variant release
+      
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-app-apk
+          path: mobile/android/app/build/outputs/apk/release/*.apk
