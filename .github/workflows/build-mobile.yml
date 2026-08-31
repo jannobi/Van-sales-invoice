@@ -1,36 +1,62 @@
 name: Build Mobile APK
 
 on:
+  push:
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      
-      - name: Install Dependencies
-        run: |
-          cd mobile
-          npm install
-      
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-      
-      - name: Build APK
-        run: |
-          cd mobile
-          npx expo export:embed
-          npx expo run:android --variant release
-      
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: mobile-app-apk
-          path: mobile/android/app/build/outputs/apk/release/*.apk
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Install Dependencies
+      run: |
+        npm install @capacitor/core @capacitor/cli @capacitor/android
+    
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm install
+        npm run build
+        cd ..
+    
+    - name: Setup Capacitor
+      run: |
+        npx cap init "Business App" "com.business.app" --web-dir=frontend/dist
+        npx cap add android
+    
+    - name: Copy Files
+      run: |
+        npx cap copy android
+        npx cap sync android
+    
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+    
+    - name: Build APK
+      run: |
+        cd android
+        chmod +x gradlew
+        ./gradlew assembleDebug
+        cd ..
+    
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: android/app/build/outputs/apk/debug/app-debug.apk
